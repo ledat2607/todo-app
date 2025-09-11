@@ -14,7 +14,7 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 
 const formLoginSchema = z.object({
   email: z.string().trim().min(1, "Required").email(),
-  password: z.string(),
+  password: z.string().min(8, "Password must be at least 8 characters long"),
 });
 
 export const SignInCard = () => {

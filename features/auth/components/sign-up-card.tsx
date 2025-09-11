@@ -3,16 +3,41 @@ import { DottedSeparator } from "@/components/dotted-separator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Eye, EyeOff, Mail, Lock, PersonStandingIcon } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, PersonStanding } from "lucide-react";
 import Link from "next/link";
+import z from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+
+
+const formSignUpSchema = z
+  .object({
+    email: z.string().trim().min(1, "Required").email(),
+    password: z.string().min(8, "Password must be at least 8 characters long"),
+    confirmPassword: z.string().min(8, "Password must be at least 8 characters long"),
+    name: z.string().min(1, "Name is required"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"], // lỗi sẽ hiển thị ở field confirmPassword
+  });
 
 export const SignUpCard = () => {
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [password, setPasword] = useState("");
-  const [confirmPassword, setConfirmPasword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const form = useForm<z.infer<typeof formSignUpSchema>>({
+    resolver: zodResolver(formSignUpSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+      name: "",
+    },
+  });
+
+  const handleSubmitSignUp = (values: z.infer<typeof formSignUpSchema>) => {
+    console.log(values);
+  };
+
 
   return (
     <Card className="w-full h-full md:w-[420px] shadow-lg rounded-2xl">
@@ -30,91 +55,150 @@ export const SignUpCard = () => {
       </div>
 
       <CardContent className="p-6">
-        <form className="space-y-5">
-          {/* Email Input */}
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground size-4" />
-            <Input
-              id="email"
-              required
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter email address"
-              disabled={false}
-              className="pl-10 pr-4 py-2"
-            />
-          </div>
-          <div className="relative">
-            <PersonStandingIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground size-4" />
-            <Input
-              id="name"
-              required
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Enter your name...."
-              disabled={false}
-              className="pl-10 pr-4 py-2"
-            />
-          </div>
-
-          {/* Password Input */}
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground size-4" />
-            <Input
-              id="password"
-              required
-              type={showPassword ? "text" : "password"}
-              value={password}
-              onChange={(e) => setPasword(e.target.value)}
-              placeholder="Enter password..."
-              disabled={false}
-              minLength={8}
-              maxLength={256}
-              className="pl-10 pr-10 py-2"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword((prev) => !prev)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition"
-            >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
-          </div>
-
-          {/*Confirm password */}
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground size-4" />
-            <Input
-              id="confirmPassword"
-              required
-              type={showConfirmPassword ? "text" : "password"}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPasword(e.target.value)}
-              placeholder="Enter confirm password..."
-              disabled={false}
-              minLength={8}
-              maxLength={256}
-              className="pl-10 pr-10 py-2"
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword((prev) => !prev)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition"
-            >
-              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
-          </div>
-          {/* Submit Button */}
-          <Button
-            disabled={false}
-            size="lg"
-            className="w-full rounded-xl transition-all duration-200 hover:scale-[1.02]"
+        <Form {...form}>
+          <form
+            className="space-y-5"
+            onSubmit={form.handleSubmit(handleSubmitSignUp)}
           >
-            Sign Up
-          </Button>
-        </form>
+            {/* Email Input */}
+            <FormField
+              name="email"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground size-4" />
+                      <Input
+                        type="email"
+                        placeholder="Enter email address..."
+                        {...field}
+                        className="pl-10" // chừa khoảng trống cho icon
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="name"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <div className="relative">
+                      <PersonStanding className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground size-4" />
+                      <Input
+                        type="email"
+                        placeholder="Enter your name..."
+                        {...field}
+                        className="pl-10" // chừa khoảng trống cho icon
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Password Input */}
+            <FormField
+              name="password"
+              control={form.control}
+              render={({ field }) => {
+                const [showPassword, setShowPassword] = useState(false);
+
+                return (
+                  <FormItem>
+                    <FormControl>
+                      <div className="relative">
+                        {/* Icon bên trái */}
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground size-4" />
+
+                        {/* Input */}
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Enter your password..."
+                          {...field}
+                          className="pl-10 pr-10"
+                        />
+
+                        {/* Nút hiện/ẩn mật khẩu */}
+                        <button
+                          type="button"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                          onClick={() => setShowPassword((prev) => !prev)}
+                          tabIndex={-1} // tránh focus khi tab
+                        >
+                          {showPassword ? (
+                            <EyeOff className="size-4" />
+                          ) : (
+                            <Eye className="size-4" />
+                          )}
+                        </button>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            {/* Confirm Password Input */}
+            <FormField
+              name="confirmPassword"
+              control={form.control}
+              render={({ field }) => {
+                const [showConfirmPassword, setShowConfirmPassword] =
+                  useState(false);
+
+                return (
+                  <FormItem>
+                    <FormControl>
+                      <div className="relative">
+                        {/* Icon bên trái */}
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground size-4" />
+
+                        {/* Input */}
+                        <Input
+                          type={showConfirmPassword ? "text" : "password"}
+                          placeholder="Confirm your password..."
+                          {...field}
+                          className="pl-10 pr-10"
+                        />
+
+                        {/* Nút hiện/ẩn mật khẩu */}
+                        <button
+                          type="button"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                          onClick={() =>
+                            setShowConfirmPassword((prev) => !prev)
+                          }
+                          tabIndex={-1} // tránh focus khi tab
+                        >
+                          {showConfirmPassword ? (
+                            <EyeOff className="size-4" />
+                          ) : (
+                            <Eye className="size-4" />
+                          )}
+                        </button>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            {/* Submit Button */}
+            <Button
+              disabled={false}
+              size="lg"
+              className="w-full rounded-xl transition-all duration-200 hover:scale-[1.02]"
+            >
+              Sign Up
+            </Button>
+          </form>
+        </Form>
       </CardContent>
 
       <div className="px-7">
