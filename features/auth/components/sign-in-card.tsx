@@ -11,15 +11,17 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { formLoginSchema } from "../schema";
+import { userLogin } from "../api/user-login";
 
-const formLoginSchema = z.object({
-  email: z.string().trim().min(1, "Required").email(),
-  password: z.string().min(8, "Password must be at least 8 characters long"),
-});
+
 
 export const SignInCard = () => {
 
+  const { mutate } = userLogin();
+
   const form = useForm<z.infer<typeof formLoginSchema>>({
+
     resolver: zodResolver(formLoginSchema),
     defaultValues: {
       email: "",
@@ -28,7 +30,7 @@ export const SignInCard = () => {
   });
 
   const handleSubmit = (values: z.infer<typeof formLoginSchema>) => {
-    console.log(values);
+    mutate({ json: values });
   };
 
   return (

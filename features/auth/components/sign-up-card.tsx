@@ -9,21 +9,13 @@ import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { formSignUpSchema } from "../schema";
+import { userRegister } from "../api/user-register";
 
-
-const formSignUpSchema = z
-  .object({
-    email: z.string().trim().min(1, "Required").email(),
-    password: z.string().min(8, "Password must be at least 8 characters long"),
-    confirmPassword: z.string().min(8, "Password must be at least 8 characters long"),
-    name: z.string().min(1, "Name is required"),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"], // lỗi sẽ hiển thị ở field confirmPassword
-  });
 
 export const SignUpCard = () => {
+  const { mutate } = userRegister();
+
   const form = useForm<z.infer<typeof formSignUpSchema>>({
     resolver: zodResolver(formSignUpSchema),
     defaultValues: {
@@ -35,7 +27,7 @@ export const SignUpCard = () => {
   });
 
   const handleSubmitSignUp = (values: z.infer<typeof formSignUpSchema>) => {
-    console.log(values);
+    mutate({ json: values });
   };
 
 
@@ -90,7 +82,7 @@ export const SignUpCard = () => {
                     <div className="relative">
                       <PersonStanding className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground size-4" />
                       <Input
-                        type="email"
+                        type="text"
                         placeholder="Enter your name..."
                         {...field}
                         className="pl-10" // chừa khoảng trống cho icon
