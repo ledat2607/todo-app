@@ -1,11 +1,10 @@
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import React from "react";
 
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <main
-      className="min-h-screen p-2 flex flex-col justify-center
+      className="min-h-screen flex flex-col justify-center
       bg-[radial-gradient(circle_at_center,_#9ebaf3,_#112d61)]"
     >
       <div className="max-w-6xl mx-auto">

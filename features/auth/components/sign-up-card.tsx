@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import { DottedSeparator } from "@/components/dotted-separator";
 import { Button } from "@/components/ui/button";
@@ -8,10 +9,15 @@ import Link from "next/link";
 import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
 import { formSignUpSchema } from "../schema";
 import { userRegister } from "../api/user-register";
-
 
 export const SignUpCard = () => {
   const { mutate } = userRegister();
@@ -29,7 +35,6 @@ export const SignUpCard = () => {
   const handleSubmitSignUp = (values: z.infer<typeof formSignUpSchema>) => {
     mutate({ json: values });
   };
-
 
   return (
     <Card className="w-full h-full md:w-[420px] shadow-lg rounded-2xl">

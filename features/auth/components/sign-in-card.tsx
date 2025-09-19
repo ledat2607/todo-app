@@ -1,27 +1,51 @@
-import { useState } from "react";
+"use client";
+import { useEffect, useState } from "react";
 import { DottedSeparator } from "@/components/dotted-separator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Eye, EyeOff, Mail, Lock, GithubIcon } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  Mail,
+  Lock,
+  GithubIcon,
+  Loader2,
+  Send,
+} from "lucide-react";
 import { FaGoogle } from "react-icons/fa";
 import Link from "next/link";
 
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
 import { formLoginSchema } from "../schema";
 import { userLogin } from "../api/user-login";
-
-
+import { redirect, useRouter } from "next/navigation";
+import { useCurrentUser } from "../api/use-current";
+import { toast } from "sonner";
 
 export const SignInCard = () => {
+  const { mutate, isPending } = userLogin();
+  const router = useRouter();
+  const { data: currentUser, isLoading } = useCurrentUser();
 
-  const { mutate } = userLogin();
+  useEffect(() => {
+    if (currentUser && !isLoading) {
+      redirect("/");
+    }
+  }, [isLoading, currentUser]);
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<z.infer<typeof formLoginSchema>>({
-
     resolver: zodResolver(formLoginSchema),
     defaultValues: {
       email: "",
@@ -30,7 +54,17 @@ export const SignInCard = () => {
   });
 
   const handleSubmit = (values: z.infer<typeof formLoginSchema>) => {
-    mutate({ json: values });
+    mutate(
+      { json: values },
+      {
+        onSuccess: () => {
+          toast.success("Login successful! Redirecting...");
+          setTimeout(() => {
+            router.replace("/");
+          }, 3000);
+        },
+      }
+    );
   };
 
   return (
@@ -80,8 +114,6 @@ export const SignInCard = () => {
               name="password"
               control={form.control}
               render={({ field }) => {
-                const [showPassword, setShowPassword] = useState(false);
-
                 return (
                   <FormItem>
                     <FormControl>
@@ -105,9 +137,9 @@ export const SignInCard = () => {
                           tabIndex={-1} // tránh focus khi tab
                         >
                           {showPassword ? (
-                            <EyeOff className="size-4" />
-                          ) : (
                             <Eye className="size-4" />
+                          ) : (
+                            <EyeOff className="size-4" />
                           )}
                         </button>
                       </div>
@@ -125,7 +157,8 @@ export const SignInCard = () => {
               size="lg"
               className="w-full rounded-xl transition-all duration-200 hover:scale-[1.02]"
             >
-              Sign In
+              {isPending ? <Loader2 className="animate-spin" /> : <Send />}
+              {isPending ? "Loading..." : "Sign in"}
             </Button>
           </form>
         </Form>
