@@ -4,6 +4,7 @@ import Link from "next/link";
 import { DottedSeparator } from "./dotted-separator";
 import { Navigation } from "./navigation";
 import { usePathname } from "next/navigation";
+import { WorkspaceSwitcher } from "./workspaces-switcher";
 
 export const Sidebar = () => {
   const path = usePathname();
@@ -16,6 +17,7 @@ export const Sidebar = () => {
         <Image src={"./logo.svg"} alt="Logo" width={58} height={48} />
         Task <p className="text-primary">Manager</p>
       </Link>
+      <WorkspaceSwitcher />
       <DottedSeparator className="my-4" />
       <Navigation currentPath={path} />
     </aside>
