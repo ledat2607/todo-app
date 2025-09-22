@@ -9,7 +9,7 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
     >
       <div className="max-w-6xl mx-auto">
         <nav className="flex justify-center items-center">
-          <Image src={"/logo.svg"} height={50} width={50} alt="logo" />
+          <Image src={"./logo.svg"} height={50} width={50} alt="logo" />
           <span className="font-bold text-2xl flex gap-2 ml-2 text-white">
             Task <p className="text-blue-800">Manager</p>
           </span>
