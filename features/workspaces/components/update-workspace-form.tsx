@@ -1,7 +1,7 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { createWorkspaceSchema } from "../schemas";
+import { updateWorkspaceSchema } from "../schemas";
 import z from "zod";
 import React, { useRef } from "react";
 
@@ -17,37 +17,47 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ImageIcon, Loader2, PlusCircleIcon, Trash } from "lucide-react";
+import { ArrowLeft, ImageIcon, Loader2, PlusCircleIcon, Trash } from "lucide-react";
 import { useCreateWorkspace } from "../api/use-create-workspace";
 import Image from "next/image";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { Workspace } from "../types";
+import { useUpdateWorkspace } from "../api/use-update-workspace";
 
 interface CreateWorkspaceFormProps {
   onCancel?: () => void;
+  initialValues: Workspace;
 }
 
-export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
-  const { mutate, isPending } = useCreateWorkspace();
+export const UpdateWorkspaceForm = ({
+  onCancel,
+  initialValues,
+}: CreateWorkspaceFormProps) => {
+  const { mutate, isPending } = useUpdateWorkspace();
   const router = useRouter();
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const form = useForm<z.infer<typeof createWorkspaceSchema>>({
-    resolver: zodResolver(createWorkspaceSchema),
+
+  
+  const form = useForm<z.infer<typeof updateWorkspaceSchema>>({
+    resolver: zodResolver(updateWorkspaceSchema),
     defaultValues: {
-      name: "",
-      image: "",
+      ...initialValues,
+      image: initialValues.image ?? undefined,
     },
   });
-  const onSubmit = (values: z.infer<typeof createWorkspaceSchema>) => {
+
+  
+  const onSubmit = (values: z.infer<typeof updateWorkspaceSchema>) => {
     const finalValues = {
       ...values,
-      image: values.image instanceof File ? values.image : "",
+      image: values.image instanceof File ? values.image : undefined,
     };
     mutate(
-      { form: finalValues },
+      { form: finalValues, param: { workspaceId: initialValues.$id } },
       {
         onSuccess: ({ data }) => {
           form.reset();
@@ -64,9 +74,20 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
   };
   return (
     <Card className="w-full h-full border-none shadow-none">
-      <CardHeader className="flex p-7">
+      <CardHeader className="flex flex-row items-center gap-x-4 p-7">
+        <Button
+          size={"sm"}
+          variant={"outline"}
+          onClick={
+            onCancel
+              ? onCancel
+              : () => router.push(`/workspaces/${initialValues.$id}`)
+          }
+        >
+          <ArrowLeft /> Back
+        </Button>
         <CardTitle className="text-xl font-bold">
-          Create new workspace
+          {initialValues.name}
         </CardTitle>
       </CardHeader>
       <div className="px-7">
@@ -101,9 +122,9 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
                       <div className="relative size-[72px] rounded-md overflow-hidden">
                         <Image
                           src={
-                            field.value instanceof File
-                              ? URL.createObjectURL(field.value)
-                              : field.value
+                            typeof field.value === "string"
+                              ? field.value
+                              : URL.createObjectURL(field.value)
                           }
                           alt="Logo"
                           className="object-cover"
@@ -130,16 +151,29 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
                         ref={inputRef}
                         disabled={isPending}
                       />
-                      <Button
-                        type="button"
-                        disabled={isPending}
-                        variant={"outline"}
-                        size="sm"
-                        className="w-fit mt-2"
-                        onClick={() => inputRef?.current?.click()}
-                      >
-                        Upload Image
-                      </Button>
+                      {field.value ? (
+                        <Button
+                          type="button"
+                          disabled={isPending}
+                          variant={"outline"}
+                          size="sm"
+                          className="w-fit mt-2"
+                          onClick={() => inputRef?.current?.click()}
+                        >
+                          Change Image
+                        </Button>
+                      ) : (
+                        <Button
+                          type="button"
+                          disabled={isPending}
+                          variant={"outline"}
+                          size="sm"
+                          className="w-fit mt-2"
+                          onClick={() => inputRef?.current?.click()}
+                        >
+                          Upload Image
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -151,12 +185,12 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
                 {isPending ? (
                   <>
                     <Loader2 className="animate-spin" />
-                    Creating....
+                    Updating....
                   </>
                 ) : (
                   <>
                     <PlusCircleIcon />
-                    Create new workspace
+                    Update
                   </>
                 )}
               </Button>
@@ -164,7 +198,7 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
                 disabled={isPending}
                 type="button"
                 variant={"destructive"}
-                className={cn(!oncancel && "invisible text-white")}
+                // className={cn(!oncancel && "invisible text-white")}
                 onClick={onCancel}
               >
                 <Trash />
