@@ -16,7 +16,7 @@ const StandAloneLayout = ({children}:{children:React.ReactNode}) => {
             </Link>
             <UserButton />
           </nav>
-          <div className="flex flex-col items-center justify-center py-4">
+          <div className="py-4 lg:flex flex-col justify-center items-center">
             {children}
           </div>
         </div>

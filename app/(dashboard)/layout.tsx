@@ -1,6 +1,5 @@
 import { Navbar } from "@/components/navbar";
 import { Sidebar } from "@/components/sidebar";
-import { getCurrent } from "@/features/auth/actions";
 import { CreateWorkspaceModal } from "@/features/workspaces/components/create-workspace-modal";
 
 const DashboardLayout = ({children}:{children: React.ReactNode}) => {
