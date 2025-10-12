@@ -164,7 +164,7 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
                 disabled={isPending}
                 type="button"
                 variant={"destructive"}
-                className={cn(!oncancel && "invisible text-white")}
+                className={cn(!onCancel && "invisible text-white")}
                 onClick={onCancel}
               >
                 <Trash />

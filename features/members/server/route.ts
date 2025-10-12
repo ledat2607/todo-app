@@ -42,6 +42,8 @@ const app = new Hono()
             ...member,
             name: user.name,
             email: user.email,
+            userId: user.$id,
+            role: member.role,
           };
         })
       );
@@ -49,6 +51,8 @@ const app = new Hono()
         data: {
           ...members,
           documents: populatedMember,
+       
+
         },
       });
     }
