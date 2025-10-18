@@ -21,7 +21,7 @@ import { useDeleteMember } from "@/features/members/api/use-delete-member";
 import { useUpdateMember } from "@/features/members/api/use-update-member";
 import { EnumTypeMember } from "@/features/members/types";
 import { useConfirm } from "@/hooks/use-confirm";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 
 interface MemberListProps {
   userId?: string;
@@ -29,7 +29,20 @@ interface MemberListProps {
 
 export const MemberList = ({ userId }: MemberListProps) => {
   const workspaceId = useWorkspaceId();
+  const router = useRouter();
+
   const { data, isLoading } = useGetMembers({ workspaceId });
+
+  // ✅ Gọi tất cả hooks ở đây, không sau return
+  const [ConfirmDialog, confirm] = useConfirm(
+    "Are you sure?",
+    "This action cannot be undone.",
+    "destructive"
+  );
+  // Removed duplicate declarations of deleteMember and updateMember
+  const { mutate: deleteMember, isPending: deletingMember } = useDeleteMember();
+  const { mutate: updateMember, isPending: updatingMember } = useUpdateMember();
+  // ✅ Sau đó mới điều kiện render
   if (isLoading) {
     return (
       <div className="flex justify-center items-center py-10">
@@ -39,17 +52,9 @@ export const MemberList = ({ userId }: MemberListProps) => {
   }
 
   if (data === undefined) {
-    redirect("/workspaces/create");
+    router.push("/workspaces/create");
+    return null;
   }
-
-  const [ConfirmDialog, confirm] = useConfirm(
-    "Are you sure?",
-    "This action cannot be undone.",
-    "destructive"
-  );
-
-  const { mutate: deleteMember, isPending: deletingMember } = useDeleteMember();
-  const { mutate: updateMember, isPending: updatingMember } = useUpdateMember();
 
   const handleUpdate = (memberId: string, role: EnumTypeMember) => {
     updateMember(

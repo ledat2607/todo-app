@@ -33,15 +33,19 @@ const Projects = () => {
           <Link
             href={href}
             key={project.$id}
-            className={`px-3 py-1 rounded-md hover:bg-neutral-200 transition text-sm text-muted-foreground ${
+            className={`px-3 py-1 rounded-md  hover:bg-neutral-200 transition text-sm text-muted-foreground ${
               isActive
-                ? "bg-neutral-200 font-medium text-blue-500"
+                ? "bg-neutral-400 font-medium text-white hover:text-blue-500"
                 : "font-normal"
             }`}
           >
             <div className="flex items-center gap-2">
               {" "}
-              <ProjectAvatar image={project.imageUrl} name={project.name} />
+              <ProjectAvatar
+                image={project.imageUrl}
+                name={project.name}
+                className="text-lg"
+              />
               <span className="truncate">{project.name}</span>
             </div>
           </Link>
