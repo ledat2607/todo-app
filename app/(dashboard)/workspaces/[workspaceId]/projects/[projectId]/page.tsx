@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { getCurrent } from "@/features/auth/actions";
 import { ProjectAvatar } from "@/features/projects/components/project-avatar";
 import { getProjects } from "@/features/projects/queries";
+import { TaskViewSwitcher } from "@/features/tasks/components/task-view-switcher";
 import { PencilIcon } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -13,7 +14,7 @@ interface ProjectIdPageProps {
 }
 
 const ProjectIdPage = async ({ params }: ProjectIdPageProps) => {
-  const projectId = await params.projectId;
+  const { projectId } = await params;
 
   const user = await getCurrent();
   if (!user) redirect("/sign-in");
@@ -47,6 +48,7 @@ const ProjectIdPage = async ({ params }: ProjectIdPageProps) => {
           </Link>
         </div>
       </div>
+      <TaskViewSwitcher /> 
     </div>
   );
 };

@@ -1,9 +1,9 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { useMedia } from "react-use";
-
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerTitle } from "@/components/ui/drawer";
-import { DialogTitle } from "@radix-ui/react-dialog";
 
 interface ResponsiveModalProps {
   children: React.ReactNode;
@@ -16,21 +16,34 @@ export const ResponsiveModal = ({
   onOpenChange,
   open,
 }: ResponsiveModalProps) => {
+  const [mounted, setMounted] = useState(false);
   const isDesktop = useMedia("(min-width:1024px)", true);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // ⚠️ tránh render trước khi client mount (fix ID mismatch)
+  if (!mounted) return null;
 
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogTitle></DialogTitle>
+        <DialogTitle asChild>
+          <span></span>
+        </DialogTitle>
         <DialogContent className="w-full sm:max-w-lg p-0 border-none overflow-y-auto hide-scrollbar max-h-[85vh]">
           {children}
         </DialogContent>
       </Dialog>
     );
   }
+
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerTitle></DrawerTitle>
+      <DrawerTitle asChild>
+        <span></span>
+      </DrawerTitle>
       <DrawerContent>
         <div className="w-full sm:max-w-lg p-0 border-none overflow-y-auto hide-scrollbar max-h-[85vh]">
           {children}

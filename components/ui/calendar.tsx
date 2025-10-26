@@ -133,13 +133,13 @@ function Calendar({
               className={cn(className)}
               {...props}
             />
-          )
+          );
         },
         Chevron: ({ className, orientation, ...props }) => {
           if (orientation === "left") {
             return (
               <ChevronLeftIcon className={cn("size-4", className)} {...props} />
-            )
+            );
           }
 
           if (orientation === "right") {
@@ -148,12 +148,12 @@ function Calendar({
                 className={cn("size-4", className)}
                 {...props}
               />
-            )
+            );
           }
 
           return (
             <ChevronDownIcon className={cn("size-4", className)} {...props} />
-          )
+          );
         },
         DayButton: CalendarDayButton,
         WeekNumber: ({ children, ...props }) => {
@@ -163,13 +163,13 @@ function Calendar({
                 {children}
               </div>
             </td>
-          )
+          );
         },
         ...components,
       }}
       {...props}
     />
-  )
+  );
 }
 
 function CalendarDayButton({
