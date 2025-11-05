@@ -15,7 +15,7 @@ type RequestType = InferRequestType<
 
 export const useUpdateProject = () => {
   const queryClient = useQueryClient();
-    const router = useRouter();
+  const router = useRouter();
   const mutation = useMutation<ResponseType, Error, RequestType>({
     mutationFn: async ({ form, param }) => {
       const res = await client.api.projects[":projectId"]["$patch"]({

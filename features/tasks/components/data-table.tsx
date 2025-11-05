@@ -51,7 +51,7 @@ export function DataTable<TData, TValue>({
       columnFilters,
     },
   });
-
+  console.log(data);
   return (
     <div>
       <div className="flex items-center py-4">

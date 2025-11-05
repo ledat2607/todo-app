@@ -14,6 +14,7 @@ import { DataFilter } from "./data-filter";
 import { useTaskFilter } from "../hooks/use-task-filter";
 import { DataTable } from "./data-table";
 import { columns } from "./colums";
+import { DataKanban } from "./data-kanban";
 
 export const TaskViewSwitcher = () => {
   const workspaceId = useWorkspaceId();
@@ -63,7 +64,7 @@ export const TaskViewSwitcher = () => {
               <DataTable columns={columns} data={tasks?.documents ?? []} />
             </TabsContent>
             <TabsContent value="kanban" className="mt-0">
-              Data Kanban
+              <DataKanban data={tasks?.documents ?? []} />
             </TabsContent>
             <TabsContent value="calendar" className="mt-0">
               Data Calendar
